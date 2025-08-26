@@ -1,21 +1,28 @@
-from sqlalchemy import Column, Integer, String, Boolean, ForeignKey
 from .database import Base
-from pydantic import BaseModel
+from sqlalchemy import Column, Integer, String, ForeignKey
 from sqlalchemy.orm import relationship
+
+class Post(Base):
+    __tablename__ = "posts"
+    id = Column(Integer, primary_key=True, index=True)
+    title = Column(String)
+    body = Column(String)
+    user_id = Column(Integer, ForeignKey("users.id"))
+    user = relationship("User", back_populates="posts")
 
 class User(Base):
     __tablename__ = "users"
     id = Column(Integer, primary_key=True, index=True)
-    name = Column(String, index=True)
+    name = Column(String)
     email = Column(String, unique=True, index=True)
-    items = relationship("Item", back_populates="owner")
-    is_active = Column(Boolean, default=True)
     password = Column(String)
+    posts = relationship("Post", back_populates="user")
+    blogs = relationship("Blog", back_populates="user")
 
-class Item(Base):
-    __tablename__ = "items"
+class Blog(Base):
+    __tablename__ = "blogs"
     id = Column(Integer, primary_key=True, index=True)
-    title = Column(String, index=True)
-    description = Column(String, index=True)
-    owner_id = Column(Integer, ForeignKey("users.id"))
-    owner = relationship("User", back_populates="items")
+    title = Column(String)
+    body = Column(String)
+    user_id = Column(Integer, ForeignKey("users.id"))
+    user = relationship("User", back_populates="blogs")
